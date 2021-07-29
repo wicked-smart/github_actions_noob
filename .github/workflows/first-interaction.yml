@@ -1,0 +1,16 @@
+name: first-interaction
+on:
+  push:
+  issues:
+    types: [opened, edited, reopened]
+
+  workflow_dispatch:
+jobs:
+  my-job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/first-interaction@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue_message: 'Thnks for opening the issue'
+          pr_message: 'Congratulations! you just opened your first PR'
