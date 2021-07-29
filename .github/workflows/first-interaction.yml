@@ -2,15 +2,32 @@ name: first-interaction
 on:
   push:
   issues:
-    types: [opened, edited, reopened]
+    types: [opened, edited]
 
   workflow_dispatch:
+
+env:
+  ISSUE_NUM: ${{ github.event.issue.number }}
+
 jobs:
   my-job:
     runs-on: ubuntu-latest
+    if: github.event_name == 'issues' && (github.event.action == 'opened' || github.event.action == 'edited')
+
     steps:
-      - uses: actions/first-interaction@v1
+
+      - uses: actions/checkout@v2
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          issue-message: 'Thnks for opening the issue'
-          
+          ref: ${{ github.head_ref }}
+
+      - name: workflow command demo
+        id: set-output
+        run: |
+         echo ::set-output name=comment::"Your issue number is #$ISSUE_NUM .Congratulations on opening your first issue on this repo"
+
+      - name: create-comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ env.ISSUE_NUM }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: ${{ steps.get-scripts.outputs.comment }}
