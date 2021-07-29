@@ -30,4 +30,4 @@ jobs:
         with:
           issue-number: ${{ env.ISSUE_NUM }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          body: ${{ steps.get-scripts.outputs.comment }}
+          body: ${{ steps.set-output.outputs.comment }}
