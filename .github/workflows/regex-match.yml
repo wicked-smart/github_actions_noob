@@ -22,12 +22,12 @@ jobs:
         regex: '^Domain:\s*(.+)$'
         flags: 'mg'
 
-    - id: set outputs
+    - id: set-outputs
       if: ${{ steps.domain-validate.outputs.match == ''}}
       run: |
         echo ::set-output name=comment::"Your Domain is validated"
 
-    - id: set outputss
+    - id: set-outputss
       if: ${{ steps.domain-validate.outputs.match != ''}}
       run: |
         echo ::set-output name=comment::"Your Domain is not validate , write as per issue template"
