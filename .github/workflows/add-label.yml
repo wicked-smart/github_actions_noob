@@ -11,4 +11,5 @@ jobs:
       - uses: actions-ecosystem/action-add-labels@v1
         if: ${{ startsWith(github.event.issue.body, '/add-labels') }}
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           labels: bug
