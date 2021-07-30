@@ -44,11 +44,13 @@ jobs:
               body="No Javascript found on $DOMAIN"
             else
               body="Javascript found on $DOMAIN:
+
               \`\`\`$js_out\`\`\`"
               body="${body//'%'/'%25'}"
               body="${body//$'\n'/'%0A'}"
               body="${body//$'\r'/'%0D'}"
             fi
+            
             echo "Comment body: $body"
             echo ::set-output name=comment::$body
           fi
