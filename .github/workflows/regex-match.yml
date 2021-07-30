@@ -1,0 +1,39 @@
+name: validate issue Comment
+on:
+  issue_comment:
+    types: [created]
+
+env:
+  ISSUE_NUM: ${{ gitub.event.issue_number }}
+
+jobs:
+  jobs-1:
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+
+    - uses: action-ecosystem/action-regex-match@v2
+      id: domain-validate
+      with:
+        text: ${{ github.event.issue.body }}
+        regex: '^Domain:\s*(.+)$'
+        flags: 'mg'
+
+    - id: set outputs
+      if: ${{ steps.domain-validate.outputs.match == ''}}
+      run: |
+        echo ::set-output name=comment:: "Your Domain is validated"
+
+      if: ${{ steps.domain-validate.outputs.match != ''}}
+      run: |
+        echo ::set-output name=comment:: "Your Domain is not validate , write as per issue template"
+
+    - name: create Comment
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        issue-number: ${{ env.ISSUE_NUM }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        body: ${{ steps.get-scripts.outputs.comment }}
