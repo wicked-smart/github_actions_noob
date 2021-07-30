@@ -15,7 +15,7 @@ jobs:
       with:
         ref: ${{ github.head_ref }}
 
-    - uses: action-ecosystem/action-regex-match@v2
+    - uses: actions-ecosystem/action-regex-match@v2
       id: domain-validate
       with:
         text: ${{ github.event.issue.body }}
