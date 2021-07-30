@@ -28,6 +28,7 @@ jobs:
         flags: 'mg'
 
     - id: get-script
+      shell: bash {0}
       env:
         DOMAIN: ${{ steps.domain-validate.outputs.group1 }}
       run: |
@@ -50,7 +51,7 @@ jobs:
               body="${body//$'\n'/'%0A'}"
               body="${body//$'\r'/'%0D'}"
             fi
-            
+
             echo "Comment body: $body"
             echo ::set-output name=comment::$body
           fi
