@@ -12,4 +12,4 @@ jobs:
         if: ${{ startsWith(github.event.issue.body, '/add-labels') }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          labels: bug
+          labels: good-first-issue
