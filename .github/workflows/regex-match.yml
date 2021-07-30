@@ -27,6 +27,7 @@ jobs:
       run: |
         echo ::set-output name=comment::"Your Domain is validated"
 
+    - id: set outputss
       if: ${{ steps.domain-validate.outputs.match != ''}}
       run: |
         echo ::set-output name=comment::"Your Domain is not validate , write as per issue template"
@@ -36,4 +37,4 @@ jobs:
       with:
         issue-number: ${{ env.ISSUE_NUM }}
         token: ${{ secrets.GITHUB_TOKEN }}
-        body: ${{ steps.get-scripts.outputs.comment }}
+        body: ${{ steps.jobs-1.outputs.comment }}
