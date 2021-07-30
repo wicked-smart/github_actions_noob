@@ -1,7 +1,12 @@
-name: validate issue Comment
+name: no js club
 on:
+  issues:
+    types: [opened, edited, reopened]
   issue_comment:
     types: [created]
+
+
+  workflow_dispatch:
 
 env:
   ISSUE_NUM: ${{ github.event.issue.number }}
@@ -22,19 +27,36 @@ jobs:
         regex: '^Domain:\s*(.+)$'
         flags: 'mg'
 
-    - id: set-outputs
-      if: ${{ steps.domain-validate.outputs.match != ''}}
+    - id: get-script
+      env:
+        DOMAIN: ${{ steps.domain-validate.outputs.group1 }}
       run: |
-        echo ::set-output name=comment::"Your Domain is validated"
+        echo "Issue #$ISSUE_NUM, candidate $DOMAIN"
 
-    - id: set-outputss
-      if: ${{ steps.domain-validate.outputs.match == ''}}
-      run: |
-        echo ::set-output name=comment::"Your Domain is not validate , write as per issue template"
+        if grep -Fq "$DOMAIN," data/sites.csv; then
+            echo "$DOMAIN found in sites already"
+            echo ::set-output name=comment::"Thank you for your contribution but $DOMAIN already exists in data."
+        else
+            echo "$DOMAIN not found in data.. Attempting to get page content."
+            js_out=$(curl --silent --show-error -L $DOMAIN | grep -F '<script')
+            echo "js snippet found: $js_out"
+            if [ -z $js_out ]; then
+              body="No Javascript found on $DOMAIN"
+            else
+              body="Javascript found on $DOMAIN:
+              \`\`\`$js_out\`\`\`"
+              body="${body//'%'/'%25'}"
+              body="${body//$'\n'/'%0A'}"
+              body="${body//$'\r'/'%0D'}"
+            fi
+            echo "Comment body: $body"
+            echo ::set-output name=comment::$body
+          fi
+
 
     - name: create Comment
       uses: peter-evans/create-or-update-comment@v1
       with:
         issue-number: ${{ env.ISSUE_NUM }}
         token: ${{ secrets.GITHUB_TOKEN }}
-        body: ${{ steps.set-outputss.outputs.comment }}
+        body: ${{ steps.get-script.outputs.comment }}
