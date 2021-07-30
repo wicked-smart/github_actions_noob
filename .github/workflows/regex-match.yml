@@ -4,7 +4,7 @@ on:
     types: [created]
 
 env:
-  ISSUE_NUM: ${{ gitub.event.issue_number }}
+  ISSUE_NUM: ${{ github.event.issue_number }}
 
 jobs:
   jobs-1:
