@@ -25,11 +25,11 @@ jobs:
     - id: set outputs
       if: ${{ steps.domain-validate.outputs.match == ''}}
       run: |
-        echo ::set-output name=comment:: "Your Domain is validated"
+        echo ::set-output name=comment::"Your Domain is validated"
 
       if: ${{ steps.domain-validate.outputs.match != ''}}
       run: |
-        echo ::set-output name=comment:: "Your Domain is not validate , write as per issue template"
+        echo ::set-output name=comment::"Your Domain is not validate , write as per issue template"
 
     - name: create Comment
       uses: peter-evans/create-or-update-comment@v1
