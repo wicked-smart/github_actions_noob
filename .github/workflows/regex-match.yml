@@ -4,7 +4,7 @@ on:
     types: [created]
 
 env:
-  ISSUE_NUM: ${{ github.event.issue_number }}
+  ISSUE_NUM: ${{ github.event.issue.number }}
 
 jobs:
   jobs-1:
@@ -23,12 +23,12 @@ jobs:
         flags: 'mg'
 
     - id: set-outputs
-      if: ${{ steps.domain-validate.outputs.match == ''}}
+      if: ${{ steps.domain-validate.outputs.match != ''}}
       run: |
         echo ::set-output name=comment::"Your Domain is validated"
 
     - id: set-outputss
-      if: ${{ steps.domain-validate.outputs.match != ''}}
+      if: ${{ steps.domain-validate.outputs.match == ''}}
       run: |
         echo ::set-output name=comment::"Your Domain is not validate , write as per issue template"
 
