@@ -12,6 +12,7 @@ env:
   ISSUE_NUM: ${{ github.event.issue.number }}
 
 jobs:
+
   jobs-1:
     runs-on: ubuntu-latest
     steps:
@@ -63,3 +64,41 @@ jobs:
         issue-number: ${{ env.ISSUE_NUM }}
         token: ${{ secrets.GITHUB_TOKEN }}
         body: ${{ steps.get-script.outputs.comment }}
+
+   update-repo:
+
+     runs-on: ubuntu-latest
+     if: github.event.comment.user.login == 'wicked-smart' && contains(github.event.comment.body, '/approve') && githuv.event_name == issue_comment
+
+     steps:
+       - uses: actions/checkout@v2
+         with:
+           ref: ${{ github.head_ref }}
+           token: ${{ secrets.JEKYLL_PAT }}
+
+      - uses: actions-ecosystem/action-regex-match@v2
+        id: regex-match
+        with:
+          text: ${{ github.event.comment.body }}
+          regex: '^/approve\s(.+)\s(.+)$'
+          flags: 'mg'
+
+      - name: Update repo data
+        if: ${{ steps.regex-match.outputs.match != '' }}
+        shell: bash
+        run: |
+          echo "${{ steps.regex-match.outputs.group1 }},${{ steps.regex-match.outputs.group2 }}" >> data/sites.csv
+
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        if: ${{ steps.regex-match.outputs.match != '' }}
+        with:
+          commit_message: "add ${{ steps.regex-match.outputs.group1 }}, fixes #${{ env.ISSUE_NUM }}"
+
+      - name: Close Issue
+        if: ${{ steps.regex-match.outputs.match != '' }}
+        uses: peter-evans/close-issue@v1
+        with:
+          issue-number: ${{ env.ISSUE_NUM }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          comment: Domain added to data. checkout data/site.csv.
